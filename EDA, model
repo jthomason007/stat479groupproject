@@ -1,0 +1,70 @@
+data = read.csv("479-data.csv", header=T, sep=",")
+
+hist(data$Total.Cost)
+hist(data$Avg.Cost)
+hist(data$Avg.CMC)
+skewness(data$Avg.CMC) #modertately skweed
+hist(data$Avg.Power) #skewed
+hist(data$Avg.Toughness) #skewed
+
+plot(x=data$Avg.Cost, y=data$Total.Wins) #don't necessarily need to pay a lot to win!
+plot(x=data$Avg.CMC, y=data$Total.Wins) #no clear trend if CMC impacts number of wins
+
+plot(x=data$Total.Cost,y=data$Total.Wins)
+
+data = data[-12,]
+data$Total.Cost = log(data$Total.Cost)
+data$Avg.Cost = log(data$Avg.Cost)
+data$Avg.Power = log(data$Avg.Power)
+data$Avg.Toughness= log(data$Avg.Toughness)
+data$Avg.CMC = log(data$Avg.CMC)
+
+data1=as.matrix(sapply(data,as.numeric))
+data1[,1] = as.factor(data1[,1])
+X = data1[,-7]
+Y = data1[,7]
+lasso=glmnet(x=X, y=Y, alpha=1)
+
+indsRand = sample(1:153, replace = FALSE)
+indsTrain = indsRand[1:123]
+indsTest = indsRand[124:153]
+YTest = Y[indsTest]
+YTrain = Y[indsTrain]
+XTrain = X[indsTrain,]
+XTest = X[indsTest,]
+
+league = factor(XTrain[,1])
+totalcost = factor(XTrain[,2])
+avgcost = factor(XTrain[,3])
+avgcmc = factor(XTrain[,4])
+avgpower = factor(XTrain[,5])
+avgtoughness = factor(XTrain[,6])
+numlands = factor(XTrain[,7])
+numbasic = factor(XTrain[,8])
+artifact = factor(XTrain[,9])
+creature = factor(XTrain[,10])
+sorcery = factor(XTrain[,11])
+planeswalker = factor(XTrain[,12])
+enchantment = factor(XTrain[,13])
+instant= factor(XTrain[,14])
+white = factor(XTrain[,15])
+blue = factor(XTrain[,16])
+black = factor(XTrain[,17])
+red = factor(XTrain[,18])
+green = factor(XTrain[,19])
+YTrain = factor(YTrain)
+glm = glm(YTrain~league+totalcost+avgcost+avgcmc+avgpower+avgtoughness+numlands+numbasic+artifact+sorcery+planeswalker+enchantment+instant+white+blue+black+red+green, family=binomial) #does not converge
+
+library(MASS)
+m = polr(Y ~ league+totalcost+avgcost+avgcmc+avgpower+avgtoughness+numlands+numbasic+artifact+sorcery+planeswalker+enchantment+instant+white+blue+black+red+green, Hess=TRUE) #OLS not converging
+
+set.seed(1)
+lasso.cv = cv.glmnet(x=X, y=Y, nfold=5)
+plot(lasso.cv)
+lasso.cv$lambda.min
+coef(lasso.cv, s="lambda.min") #no parameter estimates, just intercept
+
+ridge.cv = cv.glmnet(x=X, y=Y, nfold=5, alpha=0)
+plot(ridge.cv)
+ridge.cv$lambda.min #very large
+coef(ridge.cv, s="lambda.min")
