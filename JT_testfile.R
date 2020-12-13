@@ -99,6 +99,6 @@ mse_test
 
 
 #finding lambda
-magic.ridge.cv <- cv.glmnet(X_train, y_train, alpha=0, nfold=5)
+magic.ridge.cv <- cv.glmnet(X, y, alpha=0, nfold=5)
 plot(magic.ridge.cv)
 election.ridge.cv$lambda.min
