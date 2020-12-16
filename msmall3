@@ -1,0 +1,37 @@
+```{r}
+data = read.csv("Desktop/479 Data.csv", header = T, sep=",")
+
+hist(data$Total.Cost)
+hist(data$Avg.Cost)
+hist(data$Avg.CMC)
+skewness(data$Avg.CMC)
+hist(data$Avg.Power)
+hist(data$Avg.Toughness)
+
+plot(x=data$Avg.Cost, y=data$Total.Wins)
+
+plot(x=data$Avg.CMC, y=data$Total.Wins)
+
+ggplot2::aes(data$Total.Cost)
+
+indsRand = sample(1:988, replace = FALSE)
+indsTrain = indsRand[1:800]
+indsTest = indsRand[801:988]
+yTest = y[indsTest]
+yTrain = y[indsTrain]
+xTrain = xMat[indsTrain,]
+xTest = xMat[indsTest,]
+
+factor1 = factor(xTrain[,1])
+factor2 = factor(xTrain[,2])
+factor3 = factor(xTrain[,3])
+factor4 = factor(xTrain[,4])
+
+glm = glm(yTrain ~ factor1 + factor2 + factor3 + factor4, family = binomial)
+
+yfit = glm$fitted.values
+yfit = yfit>0.5
+Error = sum(yfit!=yTrain)
+Error_Frac = Error/800
+
+```
