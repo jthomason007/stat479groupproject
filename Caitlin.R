@@ -4,7 +4,6 @@ library(caTools)
 library(tidyverse)
 library(broom)
 
-# note: needed to remove league 29 with the NA to get glm to work
 data = read.csv("479-data.csv", header = T, sep=",")
 data = data[-12,]
 
@@ -21,12 +20,26 @@ plot(x=data$Avg.CMC, y=data$Total.Wins)
 
 
 # data transformation
-
 data$Total.Cost = log(data$Total.Cost)
 data$Avg.Cost = log(data$Avg.Cost)
 data$Avg.Power = log(data$Avg.Power)
 data$Avg.Toughness= log(data$Avg.Toughness)
 data$Avg.CMC = log(data$Avg.CMC)
+
+# convert to factors
+data$Number.Lands = factor(data[,8])
+data$Number.Types.of.Basic.Lands = factor(data[,9])
+data$Artifact = factor(data[,10])
+data$Creature = factor(data[,11])
+data$Sorcery = factor(data[,12])
+data$Planeswalker = factor(data[,13])
+data$Enchantment = factor(data[,14])
+data$Instant = factor(data[,15])
+data$White = factor(data[,16])
+data$Blue = factor(data[,17])
+data$Black = factor(data[,18])
+data$Red = factor(data[,19])
+data$Green = factor(data[,20])
 
 #partitioning data
 set.seed(117)
@@ -37,19 +50,18 @@ test <-  subset(data, sample == F)
 #X_test format
 drop <- c('League','Total.Wins')
 X_train <- train[,!(names(train) %in% drop)]
-X_train <- as.matrix(X_train)
+X_train <- data.matrix(X_train)
 drop <- c('Total.Wins')
 y_train <- train[,(names(train) %in% drop)]
-y_train <- as.matrix(y_train)
+y_train <- data.matrix(y_train)
 
 #y_test format
 drop <- c('League','Total.Wins')
 X_test <- test[,!(names(test) %in% drop)]
-X_test <- as.matrix(X_test)
+X_test <- data.matrix(X_test)
 drop <- c('Total.Wins')
 y_test <- test[,(names(test) %in% drop)]
-y_test <- as.matrix(y_test)
-
+y_test <- data.matrix(y_test)
 
 
 # ridge regression for train set
