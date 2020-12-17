@@ -1,3 +1,5 @@
+# note, all of the packages might not be used in the final, but were used 
+# through various trial and error, so some may be able to be removed
 library(moments)
 library(glmnet)
 library(caTools)
