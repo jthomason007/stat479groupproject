@@ -28,6 +28,7 @@ hist(data$Avg.Toughness, col = "paleturquoise2",
      main = "Histogram of Avg. Toughness per League vs. Frequency", 
      xlab = "Avg. Toughness per League")
 
+
 # checking scatterplots for avg. cost & cmc
 par(mfrow = c(2,1))
 plot(x=data$Avg.Cost, y=data$Total.Wins, 
@@ -39,11 +40,23 @@ plot(x=data$Avg.CMC, y=data$Total.Wins,
 
 
 # checking skewness before transformation
-skewness(data$Total.Cost)
-skewness(data$Avg.Cost)
-skewness(data$Avg.CMC)
-skewness(data$Avg.Power)
-skewness(data$Avg.Toughness)
+skewness = matrix(nrow = 5, ncol = 2, 
+                  dimnames = list( c("Total Cost", "Avg. Cost", "Avg. CMC", 
+                                     "Avg. Power",  "Avg. Toughness"), 
+                                   c("Skewness Before", "Skewness After")))
+
+a = skewness(data$Total.Cost)
+b = skewness(data$Avg.Cost)
+c= skewness(data$Avg.CMC)
+d = skewness(data$Avg.Power)
+e = skewness(data$Avg.Toughness)
+
+skewness[1] = a
+skewness[2] = b
+skewness[3] = c
+skewness[4] = d
+skewness[5] = e 
+
 
 # data transformation
 data$Total.Cost = log(data$Total.Cost)
@@ -53,7 +66,7 @@ data$Avg.Power = log(data$Avg.Power)
 data$Avg.Toughness= log(data$Avg.Toughness)
 
 
-# checking skewness after transformation & new histograms
+# New histograms after transformation
 par(mfrow=c(3,2))
 hist(data$Total.Cost, col = "palevioletred2", 
      main = "Histogram of Total Cost per League vs. Frequency", 
@@ -71,12 +84,21 @@ hist(data$Avg.Toughness, col = "palevioletred2",
      main = "Histogram of Avg. Toughness per League vs. Frequency", 
      xlab = "Avg. Toughness per League")
 
-skewness(data$Total.Cost)
-skewness(data$Avg.Cost)
-skewness(data$Avg.CMC)
-skewness(data$Avg.Power)
-skewness(data$Avg.Toughness)
 
+# Skewness After Transformation
+f = skewness(data$Total.Cost)
+g = skewness(data$Avg.Cost)
+h = skewness(data$Avg.CMC)
+i = skewness(data$Avg.Power)
+j = skewness(data$Avg.Toughness)
+
+skewness[6] = f
+skewness[7] = g
+skewness[8] = h
+skewness[9] = i
+skewness[10] = j
+
+skewness
 
 
 # convert to factors
@@ -95,11 +117,13 @@ data$Red = factor(data[,19])
 data$Green = factor(data[,20])
 str(data)
 
+
 #partitioning data
 set.seed(117)
 sample <- sample.split(data, SplitRatio = .75)
 train <- subset(data, sample == T)
 test <-  subset(data, sample == F)
+
 
 #X_test format
 drop <- c('League','Total.Wins')
@@ -108,6 +132,7 @@ X_train <- data.matrix(X_train)
 drop <- c('Total.Wins')
 y_train <- train[,(names(train) %in% drop)]
 y_train <- data.matrix(y_train)
+
 
 #y_test format
 drop <- c('League','Total.Wins')
@@ -123,6 +148,7 @@ lambdas <- 10^seq(3, -2,by = -.1)
 fit <- glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
 summary(fit)
 
+
 # finding lambda
 cv_fit <- cv.glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
 par(mfrow=c(1,1))
@@ -133,9 +159,11 @@ fit <- cv_fit$glmnet.fit
 summary(fit)
 y_predicted <- predict(fit, s = opt_lambda, newx = X_train)
 
+
 # Sum of Squares Total and Error
 sst <- sum((y_train - mean(y_train))^2)
 sse <- sum((y_predicted - y_train)^2)
+
 
 # R squared
 rsq <- 1 - sse / sst
