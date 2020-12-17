@@ -1,5 +1,6 @@
 # note, all of the packages might not be used in the final, but were used 
 # through various trial and error, so some may be able to be removed
+
 library(moments)
 library(glmnet)
 library(caTools)
@@ -7,6 +8,7 @@ library(tidyverse)
 library(broom)
 library(MASS)
 library(ridge)
+
 
 data = read.csv("479-data.csv", header = T, sep=",")
 data = data[-12,]
@@ -31,15 +33,24 @@ hist(data$Avg.Toughness, col = "paleturquoise2",
      xlab = "Avg. Toughness per League")
 
 
-# checking scatterplots for avg. cost & cmc
-par(mfrow = c(2,1))
+# checking scatterplots
+par(mfrow = c(3,2))
+plot(x=data$Total.Cost, y=data$Total.Wins, 
+     main = "Total Cost per League vs. Total Wins per League", 
+     xlab = "Total Cost per League", ylab = "Total Wins per League")
 plot(x=data$Avg.Cost, y=data$Total.Wins, 
      main = "Avg. Cost per Card vs. Total Wins per League", 
      xlab = "Avg. Cost per Card", ylab = "Total Wins per League")
 plot(x=data$Avg.CMC, y=data$Total.Wins, 
      main = "Avg. CMC per League vs. Total Wins per League", 
      xlab = "Avg. CMC per League", ylab = "Total Wins per League")
-
+plot(x=data$Avg.Power, y=data$Total.Wins, 
+     main = "Avg. Power per League vs. Total Wins per League", 
+     xlab = "Avg. Power per League", ylab = "Total Wins per League")
+plot(x=data$Avg.Toughness, y=data$Total.Wins, 
+     main = "Avg. Toughness per League vs. Total Wins per League", 
+     xlab = "Avg. Toughness per League", ylab = "Total Wins per League")
+     
 
 # checking skewness before transformation
 skewness = matrix(nrow = 5, ncol = 2, 
@@ -47,20 +58,41 @@ skewness = matrix(nrow = 5, ncol = 2,
                                      "Avg. Power",  "Avg. Toughness"), 
                                    c("Skewness Before", "Skewness After")))
 
-a = skewness(data$Total.Cost)
-b = skewness(data$Avg.Cost)
-c= skewness(data$Avg.CMC)
-d = skewness(data$Avg.Power)
-e = skewness(data$Avg.Toughness)
+# note: bs means before skewness
+bs1 = skewness(data$Total.Cost)
+bs2 = skewness(data$Avg.Cost)
+bs3 = skewness(data$Avg.CMC)
+bs4 = skewness(data$Avg.Power)
+bs5 = skewness(data$Avg.Toughness)
 
-skewness[1] = a
-skewness[2] = b
-skewness[3] = c
-skewness[4] = d
-skewness[5] = e 
+skewness[1] = bs1
+skewness[2] = bs2
+skewness[3] = bs3
+skewness[4] = bs4
+skewness[5] = bs5
 
 
-# data transformation
+# checking kurtosis before transformation
+kurtosis = matrix(nrow = 5, ncol = 2, 
+                  dimnames = list( c("Total Cost", "Avg. Cost", "Avg. CMC", 
+                                     "Avg. Power",  "Avg. Toughness"), 
+                                   c("Kurtosis Before", "Kurtosis After")))
+
+# note: bk means before kurtosis
+bk1 = kurtosis(data$Total.Cost)
+bk2 = kurtosis(data$Avg.Cost)
+bk3 = kurtosis(data$Avg.CMC)
+bk4 = kurtosis(data$Avg.Power)
+bk5 = kurtosis(data$Avg.Toughness)
+
+kurtosis[1] = bk1
+kurtosis[2] = bk2
+kurtosis[3] = bk3
+kurtosis[4] = bk4
+kurtosis[5] = bk5
+
+
+# Data transformation
 data$Total.Cost = log(data$Total.Cost)
 data$Avg.Cost = log(data$Avg.Cost)
 data$Avg.CMC = log(data$Avg.CMC)
@@ -87,20 +119,59 @@ hist(data$Avg.Toughness, col = "palevioletred2",
      xlab = "Avg. Toughness per League")
 
 
-# Skewness After Transformation
-f = skewness(data$Total.Cost)
-g = skewness(data$Avg.Cost)
-h = skewness(data$Avg.CMC)
-i = skewness(data$Avg.Power)
-j = skewness(data$Avg.Toughness)
+# New scatterplots after transformation
+par(mfrow = c(3,2))
+plot(x=data$Total.Cost, y=data$Total.Wins, 
+     main = "Total Cost per League vs. Total Wins per League", 
+     xlab = "Total Cost per League", ylab = "Total Wins per League")
+plot(x=data$Avg.Cost, y=data$Total.Wins, 
+     main = "Avg. Cost per Card vs. Total Wins per League", 
+     xlab = "Avg. Cost per Card", ylab = "Total Wins per League")
+plot(x=data$Avg.CMC, y=data$Total.Wins, 
+     main = "Avg. CMC per League vs. Total Wins per League", 
+     xlab = "Avg. CMC per League", ylab = "Total Wins per League")
+plot(x=data$Avg.Power, y=data$Total.Wins, 
+     main = "Avg. Power per League vs. Total Wins per League", 
+     xlab = "Avg. Power per League", ylab = "Total Wins per League")
+plot(x=data$Avg.Toughness, y=data$Total.Wins, 
+     main = "Avg. Toughness per League vs. Total Wins per League", 
+     xlab = "Avg. Toughness per League", ylab = "Total Wins per League")
 
-skewness[6] = f
-skewness[7] = g
-skewness[8] = h
-skewness[9] = i
-skewness[10] = j
+
+# Skewness After Transformation
+
+# note: as means after skewness
+as1 = skewness(data$Total.Cost)
+as2 = skewness(data$Avg.Cost)
+as3 = skewness(data$Avg.CMC)
+as4 = skewness(data$Avg.Power)
+as5 = skewness(data$Avg.Toughness)
+
+skewness[6] = as1
+skewness[7] = as2
+skewness[8] = as3
+skewness[9] = as4
+skewness[10] = as5
 
 skewness
+
+
+# Kurtosis after transformation
+
+# note: ak means after kurtosis
+ak1 = kurtosis(data$Total.Cost)
+ak2 = kurtosis(data$Avg.Cost)
+ak3 = kurtosis(data$Avg.CMC)
+ak4 = kurtosis(data$Avg.Power)
+ak5 = kurtosis(data$Avg.Toughness)
+
+kurtosis[6] = ak1
+kurtosis[7] = ak2
+kurtosis[8] = ak3
+kurtosis[9] = ak4
+kurtosis[10] = ak5
+
+kurtosis
 
 
 # convert to factors
