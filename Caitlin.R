@@ -3,28 +3,81 @@ library(glmnet)
 library(caTools)
 library(tidyverse)
 library(broom)
+library(MASS)
+library(ridge)
 
 data = read.csv("479-data.csv", header = T, sep=",")
 data = data[-12,]
 
 
 # EDA
-hist(data$Total.Cost)
-hist(data$Avg.Cost)
-hist(data$Avg.CMC)
-skewness(data$Avg.CMC)
-hist(data$Avg.Power)
-hist(data$Avg.Toughness)
-plot(x=data$Avg.Cost, y=data$Total.Wins)
-plot(x=data$Avg.CMC, y=data$Total.Wins)
+par(mfrow=c(3,2))
+hist(data$Total.Cost, col = "paleturquoise2", 
+     main = "Histogram of Total Cost per League vs. Frequency", 
+     xlab = "Total Cost per League")
+hist(data$Avg.Cost, col = "paleturquoise2", 
+     main = "Histogram of Avg. Cost per League vs. Frequency", 
+     xlab = "Avg. Cost per League")
+hist(data$Avg.CMC, col = "paleturquoise2", 
+     main = "Histogram of Avg. CMC per League vs. Frequency", 
+     xlab = "Avg. CMC per League")
+hist(data$Avg.Power, col = "paleturquoise2", 
+     main = "Histogram of Avg. Power per League vs. Frequency", 
+     xlab = "Avg. Power per League")
+hist(data$Avg.Toughness, col = "paleturquoise2", 
+     main = "Histogram of Avg. Toughness per League vs. Frequency", 
+     xlab = "Avg. Toughness per League")
 
+# checking scatterplots for avg. cost & cmc
+par(mfrow = c(2,1))
+plot(x=data$Avg.Cost, y=data$Total.Wins, 
+     main = "Avg. Cost per Card vs. Total Wins per League", 
+     xlab = "Avg. Cost per Card", ylab = "Total Wins per League")
+plot(x=data$Avg.CMC, y=data$Total.Wins, 
+     main = "Avg. CMC per League vs. Total Wins per League", 
+     xlab = "Avg. CMC per League", ylab = "Total Wins per League")
+
+
+# checking skewness before transformation
+skewness(data$Total.Cost)
+skewness(data$Avg.Cost)
+skewness(data$Avg.CMC)
+skewness(data$Avg.Power)
+skewness(data$Avg.Toughness)
 
 # data transformation
 data$Total.Cost = log(data$Total.Cost)
 data$Avg.Cost = log(data$Avg.Cost)
+data$Avg.CMC = log(data$Avg.CMC)
 data$Avg.Power = log(data$Avg.Power)
 data$Avg.Toughness= log(data$Avg.Toughness)
-data$Avg.CMC = log(data$Avg.CMC)
+
+
+# checking skewness after transformation & new histograms
+par(mfrow=c(3,2))
+hist(data$Total.Cost, col = "palevioletred2", 
+     main = "Histogram of Total Cost per League vs. Frequency", 
+     xlab = "Total Cost per League")
+hist(data$Avg.Cost, col = "palevioletred2", 
+     main = "Histogram of Avg. Cost per League vs. Frequency", 
+     xlab = "Avg. Cost per League")
+hist(data$Avg.CMC, col = "palevioletred2", 
+     main = "Histogram of Avg. CMC per League vs. Frequency", 
+     xlab = "Avg. CMC per League")
+hist(data$Avg.Power, col = "palevioletred2", 
+     main = "Histogram of Avg. Power per League vs. Frequency", 
+     xlab = "Avg. Power per League")
+hist(data$Avg.Toughness, col = "palevioletred2", 
+     main = "Histogram of Avg. Toughness per League vs. Frequency", 
+     xlab = "Avg. Toughness per League")
+
+skewness(data$Total.Cost)
+skewness(data$Avg.Cost)
+skewness(data$Avg.CMC)
+skewness(data$Avg.Power)
+skewness(data$Avg.Toughness)
+
+
 
 # convert to factors
 data$Number.Lands = factor(data[,8])
@@ -40,6 +93,7 @@ data$Blue = factor(data[,17])
 data$Black = factor(data[,18])
 data$Red = factor(data[,19])
 data$Green = factor(data[,20])
+str(data)
 
 #partitioning data
 set.seed(117)
@@ -71,6 +125,7 @@ summary(fit)
 
 # finding lambda
 cv_fit <- cv.glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
+par(mfrow=c(1,1))
 plot(cv_fit)
 opt_lambda <- cv_fit$lambda.min
 opt_lambda
