@@ -193,52 +193,52 @@ str(data)
 
 #partitioning data
 set.seed(117)
-sample <- sample.split(data, SplitRatio = .75)
-train <- subset(data, sample == T)
-test <-  subset(data, sample == F)
+sample = sample.split(data, SplitRatio = .75)
+train = subset(data, sample == T)
+test =  subset(data, sample == F)
 
 
 #X_test format
-drop <- c('League','Total.Wins')
-X_train <- train[,!(names(train) %in% drop)]
-X_train <- data.matrix(X_train)
-drop <- c('Total.Wins')
-y_train <- train[,(names(train) %in% drop)]
-y_train <- data.matrix(y_train)
+drop = c('League','Total.Wins')
+X_train = train[,!(names(train) %in% drop)]
+X_train = data.matrix(X_train)
+drop = c('Total.Wins')
+y_train = train[,(names(train) %in% drop)]
+y_train = data.matrix(y_train)
 
 
 #y_test format
-drop <- c('League','Total.Wins')
-X_test <- test[,!(names(test) %in% drop)]
-X_test <- data.matrix(X_test)
-drop <- c('Total.Wins')
-y_test <- test[,(names(test) %in% drop)]
-y_test <- data.matrix(y_test)
+drop = c('League','Total.Wins')
+X_test = test[,!(names(test) %in% drop)]
+X_test = data.matrix(X_test)
+drop = c('Total.Wins')
+y_test = test[,(names(test) %in% drop)]
+y_test = data.matrix(y_test)
 
 
 # ridge regression for train set
-lambdas <- 10^seq(3, -2,by = -.1)
-fit1 <- glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
+lambdas = 10^seq(3, -2,by = -.1)
+fit1 = glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
 summary(fit1)
 
 
 # finding lambda
-cv.fit <- cv.glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
+cv.fit = cv.glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
 par(mfrow=c(1,1))
 plot(cv.fit)
-opt_lambda <- cv.fit$lambda.min
+opt_lambda = cv.fit$lambda.min
 opt_lambda
 coef(cv.fit, opt_lambda)
-fit2 <- cv.fit$glmnet.fit
+fit2 = cv.fit$glmnet.fit
 summary(fit2)
-y_predicted <- predict(fit1, s = opt_lambda, newx = X_train)
+y_predicted = predict(fit1, s = opt_lambda, newx = X_train)
 
 
 # Sum of Squares Total and Error
-sst <- sum((y_train - mean(y_train))^2)
-sse <- sum((y_train - y_predicted)^2)
+sst = sum((y_train - mean(y_train))^2)
+sse = sum((y_train - y_predicted)^2)
 
 
 # R squared
-rsq <- 1 - (sse / sst)
+rsq = 1 - (sse / sst)
 rsq
