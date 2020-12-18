@@ -218,26 +218,27 @@ y_test <- data.matrix(y_test)
 
 # ridge regression for train set
 lambdas <- 10^seq(3, -2,by = -.1)
-fit <- glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
-summary(fit)
+fit1 <- glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
+summary(fit1)
 
 
 # finding lambda
-cv_fit <- cv.glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
+cv.fit <- cv.glmnet(X_train, y_train, alpha = 0, lambda = lambdas)
 par(mfrow=c(1,1))
-plot(cv_fit)
-opt_lambda <- cv_fit$lambda.min
+plot(cv.fit)
+opt_lambda <- cv.fit$lambda.min
 opt_lambda
-fit <- cv_fit$glmnet.fit
-summary(fit)
-y_predicted <- predict(fit, s = opt_lambda, newx = X_train)
+coef(cv.fit, opt_lambda)
+fit2 <- cv.fit$glmnet.fit
+summary(fit2)
+y_predicted <- predict(fit1, s = opt_lambda, newx = X_train)
 
 
 # Sum of Squares Total and Error
 sst <- sum((y_train - mean(y_train))^2)
-sse <- sum((y_predicted - y_train)^2)
+sse <- sum((y_train - y_predicted)^2)
 
 
 # R squared
-rsq <- 1 - sse / sst
+rsq <- 1 - (sse / sst)
 rsq
