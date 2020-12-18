@@ -243,18 +243,18 @@ sse = sum((y_train - y_predicted)^2)
 rsq = 1 - (sse / sst)
 rsq
 
-# Graphs
+# Graphs for Ridge
 library(RColorBrewer)
-mypalette <- brewer.pal(6,"Set1")
+mypalette <- brewer.pal(12,"Set3")
 mypalette
 
-
+par(mar=c(5, 5, 5, 14), xpd=TRUE)
 plot(fit1, xvar = "lambda", label=TRUE, lwd=3, col=mypalette, 
      main="Ridge Penalty Regression")
 abline(h=0, lwd=1, lty=2, col="grey")
-legend("topright", lwd=3, lty=1, legend=colnames(X_train), col=mypalette)
+legend("topright", inset=c(-.585,0), lwd=3, lty=1, legend=colnames(X_train), col=mypalette)
 
 
 hist(predict(fit1, newx = X_train, s = opt_lambda, 
-             type="response"), xlab="Predicted Probability of Win", 
-     main="Histogram of Predicted Probability") #prediction
+             type="response"), xlab="Predicted Number of Wins", 
+     main="Histogram of Predicted Number of Wins") #prediction
