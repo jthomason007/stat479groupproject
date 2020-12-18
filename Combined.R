@@ -247,8 +247,8 @@ gd.data =cbind(X_train, y_train)
 gd.model.delta = ADADELTA(gd.data, seed=117)
 gd.model.delta
 i=0
-results=matrix(nrow=35, ncol=1)
-for (i in 1:35){
+results=matrix(nrow=36, ncol=1)
+for (i in 1:36){
         tempval = as.numeric(gd.model.delta[1]) + 
                 as.numeric(gd.model.delta[2]*X_test[i,1]) + 
                 as.numeric(gd.model.delta[3]*X_test[i,2]) + 
