@@ -57,3 +57,28 @@ for (i in 116) {
 
 mean((X_test%*%b_LS[,1] - y_test)**2)
 
+#using gradDescent package in R
+library("gradDescent")
+gd.data =cbind(X_train, y_train)
+gd.model.delta = ADADELTA(gd.data, seed=117)
+gd.model.delta
+
+i=0
+results=matrix(nrow=35, ncol=1)
+for (i in 1:35){
+  tempval = as.numeric(gd.model.delta[1]) + as.numeric(gd.model.delta[2]*X_test[i,1]) + 
+  as.numeric(gd.model.delta[3]*X_test[i,2]) + as.numeric(gd.model.delta[4]*X_test[i,3]) + 
+  as.numeric(gd.model.delta[5]*X_test[i,4]) + as.numeric(gd.model.delta[6]*X_test[i,5]) + 
+  as.numeric(gd.model.delta[7]*X_test[i,6]) + as.numeric(gd.model.delta[8]*X_test[i,7]) + 
+  as.numeric(gd.model.delta[9]*X_test[i,8]) + as.numeric(gd.model.delta[10]*X_test[i,9]) + 
+  as.numeric(gd.model.delta[11]*X_test[i,10]) + as.numeric(gd.model.delta[12]*X_test[i,11]) + 
+  as.numeric(gd.model.delta[13]*X_test[i,12]) + as.numeric(gd.model.delta[14]*X_test[i,13]) + 
+  as.numeric(gd.model.delta[15]*X_test[i,14]) + as.numeric(gd.model.delta[16]*X_test[i,15]) + 
+  as.numeric(gd.model.delta[17]*X_test[i,16]) + as.numeric(gd.model.delta[18]*X_test[i,17]) + 
+  as.numeric(gd.model.delta[19]*X_test[i,18]) 
+  results[i,1] = tempval
+  }
+
+mean((results[,1] - y_test)**2)
+
+
