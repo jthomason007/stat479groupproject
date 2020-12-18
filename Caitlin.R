@@ -1,14 +1,7 @@
-# note, all of the packages might not be used in the final, but were used 
-# through various trial and error, so some may be able to be removed
-
 library(moments)
 library(glmnet)
 library(caTools)
-library(tidyverse)
-library(broom)
-library(MASS)
-library(ridge)
-
+library(RColorBrewer)
 
 data = read.csv("479-data.csv", header = T, sep=",")
 data = data[-12,]
@@ -248,6 +241,7 @@ library(RColorBrewer)
 mypalette <- brewer.pal(12,"Set3")
 mypalette
 
+# need to have viewing window big enough or legend can cause issues
 par(mar=c(5, 5, 5, 14), xpd=TRUE)
 plot(fit1, xvar = "lambda", label=TRUE, lwd=3, col=mypalette, 
      main="Ridge Penalty Regression")
