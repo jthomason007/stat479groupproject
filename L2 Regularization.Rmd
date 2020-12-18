@@ -1,0 +1,43 @@
+---
+title: "L2 Regularization"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(broom)
+library(glmnet)
+
+y <- mtcars$hp
+x <- mtcars %>% select(mpg, wt, drat) %>% data.matrix()
+lambdas <- 10^seq(3, -2, by = -.1)
+
+fit <- glmnet(x, y, alpha = 0, lambda = lambdas)
+summary(fit)
+
+cv_fit <- cv.glmnet(x, y, alpha = 0, lambda = lambdas)
+
+plot(cv_fit)
+
+opt_lambda <- cv_fit$lambda.min
+opt_lambda
+
+fit <- cv_fit$glmnet.fit
+summary(fit)
+
+y_predicted <- predict(fit, s = opt_lambda, newx = x)
+
+# Sum of Squares Total and Error
+sst <- sum((y - mean(y))^2)
+sse <- sum((y_predicted - y)^2)
+
+# R squared
+rsq <- 1 - sse / sst
+rsq
+```
