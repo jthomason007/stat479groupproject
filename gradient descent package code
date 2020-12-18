@@ -1,0 +1,25 @@
+data = read.csv("479-data.csv", header=T, sep=",")
+data = data[-12,]
+data$Total.Cost = log(data$Total.Cost)
+data$Avg.Cost = log(data$Avg.Cost)
+data$Avg.Power = log(data$Avg.Power)
+data$Avg.Toughness= log(data$Avg.Toughness)
+data$Avg.CMC = log(data$Avg.CMC)
+data1=as.matrix(sapply(data,as.numeric))
+data1[,1] = as.factor(data1[,1])
+X = data1[,-7]
+Y = data1[,7]
+indsRand = sample(1:153, replace = FALSE)
+indsTrain = indsRand[1:123]
+indsTest = indsRand[124:153]
+YTest = Y[indsTest]
+YTrain = Y[indsTrain]
+XTrain = X[indsTrain,]
+XTest = X[indsTest,]
+
+set.seed(1)
+library("gradDescent")
+gd.data = cbind(XTrain,YTrain)
+head(gd.data)
+gd.model.delta=ADADELTA(gd.data)
+gd.model.delta
